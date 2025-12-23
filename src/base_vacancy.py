@@ -11,7 +11,7 @@ class VacancyAPI(ABC):
         self.headers = headers or {}
 
     @abstractmethod
-    def connect(self) -> bool:
+    def _connect(self) -> bool:
         """Подключение к API сервиса"""
 
         pass

@@ -17,7 +17,7 @@ class HeadHunterAPI(VacancyAPI):
         )
         self._connected = False
 
-    def connect(self) -> bool:
+    def _connect(self) -> bool:
         """
         Подключение к API HeadHunter.
         Проверяет доступность API.
@@ -38,7 +38,7 @@ class HeadHunterAPI(VacancyAPI):
 
         # Проверка подключения
         if not self._connected:
-            if not self.connect():
+            if not self._connect():
                 return []  # API недоступно
 
         params = {

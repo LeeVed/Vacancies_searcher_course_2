@@ -1,7 +1,10 @@
+import tempfile
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 import json
+from unittest.mock import Mock
+
 from config import VACANCIES_JSON
 from src.vacancy import Vacancy
 
@@ -51,20 +54,20 @@ class JSONSaver(BaseSaver):
     def __init__(self, filename: Path = VACANCIES_JSON):
         """Инициализация JSONSaver"""
 
-        self.filename = filename
+        self._filename = filename
         self._ensure_file_exists()
 
     def _ensure_file_exists(self) -> None:
         """Создать файл если он не существует."""
 
-        if not self.filename.exists():
+        if not self._filename.exists():
             self._write_data([])
 
     def _read_data(self) -> List[Dict[str, Any]]:
         """Прочитать данные из файла"""
 
         try:
-            with open(self.filename, 'r', encoding='utf-8') as f:
+            with open(self._filename, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except json.JSONDecodeError:
             # Файл есть, но содержит некорректный JSON
@@ -75,9 +78,9 @@ class JSONSaver(BaseSaver):
     def _write_data(self, data: List[Dict[str, Any]]) -> None:
         """Записать данные в файл"""
 
-        self.filename.parent.mkdir(parents=True, exist_ok=True)
+        self._filename.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(self.filename, 'w', encoding='utf-8') as f:
+        with open(self._filename, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
     def add_vacancy(self, vacancy: Vacancy) -> None:
