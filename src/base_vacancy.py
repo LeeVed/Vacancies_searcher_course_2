@@ -1,21 +1,35 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
+import requests
 
 
 class VacancyAPI(ABC):
-    """Абстрактный класс для работы с API сервисов с вакансиями"""
+    """Абстрактный класс для работы с API сервисов вакансий"""
+
+    def __init__(self, base_url: str, headers: dict = None):
+        self.base_url = base_url
+        self.headers = headers or {}
+
+    @abstractmethod
+    def _connect(self) -> bool:
+        """Подключение к API сервиса"""
+
+        pass
 
     @abstractmethod
     def get_vacancies(self, search_query: str, **kwargs) -> List[Dict[str, Any]]:
-        """
-        Функция получает вакансии по поисковому запросу и
-        возвращает список словарей с данными о вакансиях
-        """
+        """Получить вакансии по поисковому запросу"""
+
         pass
 
-    @abstractmethod
-    def _validate_response(self, response) -> bool:
-        """
-        Валидация ответа от API и возвращает булево значение True если ответ валидный, иначе False
-        """
-        pass
+    def _make_request(self, endpoint: str, params: dict = None):
+        """Общий метод для HTTP-запросов"""
+
+        url = f"{self.base_url}{endpoint}"
+        try:
+            response = requests.get(url, params=params, headers=self.headers, timeout=10)
+            response.raise_for_status()  # Проверяем статус код
+            return response
+        except requests.RequestException as e:
+            print(f"Ошибка при запросе к {url}: {e}")
+            raise
